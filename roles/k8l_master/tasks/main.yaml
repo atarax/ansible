@@ -1,0 +1,90 @@
+- name: turn swap off for kubelet to work properly
+  shell: "swapoff -a"
+
+- name: proper cgroup-driver for kubelet
+  copy:
+    src: daemon.json
+    dest: '/etc/docker/daemon.json'
+
+- name: apt is up to date
+  apt:
+    update_cache: yes
+
+- name: apt-tools are present
+  apt:
+    name: 
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    state: present 
+
+- name: docker-apt-key is present
+  apt_key:
+    url: 'https://download.docker.com/linux/ubuntu/gpg'
+    state: present
+
+- name: docker-apt-repository is present
+  apt_repository:
+    repo: 'deb https://download.docker.com/linux/debian stretch stable'
+    update_cache: yes
+
+- name: docker is installed
+  apt:
+    name: docker-ce
+    state: present
+
+- name: k8l-apt-key is present
+  apt_key:
+    url: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg' 
+
+- name: k8l-repository is present
+  apt_repository:
+    repo: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
+    update_cache: yes
+
+- name: k8l-binaries are installed
+  apt:
+    name: 
+    - kubelet
+    - kubeadm
+    - kubectl
+
+- name: Reset Kubernetes component
+  shell: "kubeadm reset"
+  register: reset_cluster
+
+- name: Init Kubernetes cluster
+  when: reset_cluster|succeeded
+  shell: "kubeadm init"
+  register: init_cluster
+
+- name: Create Kubernetes config directory
+  file: path=/root/.kube/ state=directory
+
+- name: Enable and restart kubelet engine
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  register: started_kubelet
+
+- name: Create Kubernetes config directory
+  file: path=/root/.kube/ state=directory
+
+- name: Copy admin.conf to root
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/root/.kube/config"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: True
+
+- name: taint master-node
+  shell: "kubectl taint nodes --all node-role.kubernetes.io/master-"
+
+- name: pod-network is present (calico)
+  shell: "kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+
