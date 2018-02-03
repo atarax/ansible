@@ -1,0 +1,5 @@
+- hosts: load_balancer
+  user: root
+  
+  roles:
+  - load_balancer
