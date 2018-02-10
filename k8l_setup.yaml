@@ -1,5 +1,0 @@
-- hosts: k8l_master
-  user: root
-  
-  roles:
-  - k8l_master
