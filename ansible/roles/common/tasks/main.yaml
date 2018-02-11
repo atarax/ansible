@@ -1,0 +1,9 @@
+- name: apt-tools are present
+  apt:
+    name:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    state: present
+

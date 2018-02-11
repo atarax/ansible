@@ -1,0 +1,23 @@
+- name: turn swap off for kubelet to work properly
+  shell: "swapoff -a"
+
+- name: proper cgroup-driver for kubelet
+  copy:
+    src: daemon.json
+    dest: '/etc/docker/daemon.json'
+
+- name: k8l-apt-key is present
+  apt_key:
+    url: 'https://packages.cloud.google.com/apt/doc/apt-key.gpg'
+
+- name: k8l-repository is present
+  apt_repository:
+    repo: 'deb http://apt.kubernetes.io/ kubernetes-xenial main'
+    update_cache: yes
+
+- name: k8l-binaries are installed
+  apt:
+    name:
+    - kubelet
+    - kubeadm
+    - kubectl

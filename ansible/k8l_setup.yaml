@@ -1,0 +1,11 @@
+- hosts: k8l_master
+  user: root
+  
+  roles:
+  - k8l/master
+
+- hosts: k8l_node
+  user: root
+
+  roles:
+  - k8l/node

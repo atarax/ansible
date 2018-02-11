@@ -1,0 +1,15 @@
+- hosts: all
+
+  user: ubuntu
+  become_user: root
+
+  gather_facts: no
+  
+  pre_tasks:
+    - name: 'install python'
+      raw: 'sudo apt-get install --yes python'
+  
+  tasks:
+    - name: Copy ubuntu ssh-key
+      command: 'sudo cp /home/ubuntu/.ssh/authorized_keys /root/.ssh/authorized_keys'
+        

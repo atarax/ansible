@@ -1,0 +1,6 @@
+- name: etcd is installed
+  copy:
+    src: 'files/etcd_bin/etcd'
+    dest: '/usr/local/bin/etcd'
+    mode: 0755
+

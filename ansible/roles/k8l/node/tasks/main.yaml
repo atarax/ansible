@@ -1,0 +1,28 @@
+- include_role:
+    name: common
+
+- include_role:
+    name: docker
+
+- include_role:
+    name: k8l/common
+
+# read token and join cluster
+- name: Include all default extension files in vars/all and all nested directories and save the output in test. (2.2)
+  include_vars:
+    file: 'config/token.yaml'
+    name: token
+
+- debug:
+    msg: '{{ token.value }}'
+
+- debug:
+    msg: '{{ groups["k8l_master"][0] }}'
+
+- name: Reset Kubernetes component
+  shell: "kubeadm reset"
+  register: reset_cluster
+
+# join cluster
+- name: Join cluster
+  command:  'kubeadm join --token {{ token.value }} --discovery-token-unsafe-skip-ca-verification {{ groups["k8l_master"][0] }}:6443'

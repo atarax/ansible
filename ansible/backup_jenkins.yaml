@@ -1,0 +1,26 @@
+- hosts:
+    - jenkins_backup_source
+
+  user: root
+
+  roles:
+    - docker-ce
+
+  vars:
+    jenkins_backup_file: 'jenkins_data.tar.bz2'
+
+  tasks:
+    - name: Stop jenkins
+      command: 'docker stop jenkins'
+      ignore_errors: yes
+
+    - name: Backup jenkins docker-volume
+      command: |
+        docker run --rm -v jenkins_data:/volume -v /tmp:/backup alpine \
+          tar -cjf /backup/'{{ jenkins_backup_file }}' -C /volume ./
+
+    - name: fetch the backup-file
+      fetch:
+        src: '/tmp/{{ jenkins_backup_file }}'
+        dest: 'backup/{{ jenkins_backup_file }}'
+        flat: yes

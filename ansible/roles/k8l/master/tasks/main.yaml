@@ -1,0 +1,76 @@
+# generate a cluster-token
+# and copy it to the host
+- include_role:
+    name: common
+
+- include_role:
+    name: docker
+
+- include_role:
+    name: k8l/common
+
+- name: generate cluster-token
+  command: kubeadm token generate
+  register: token_raw
+
+- set_fact:
+    token: '{{ token_raw.stdout }}'
+
+- file:
+    path: config
+    state: directory
+
+- name: save token
+  copy:
+    dest: config/token.yaml
+    content: 'value: {{ token }}'
+
+- name: fetch token
+  fetch:
+    src: config/token.yaml
+    dest: config/token.yaml
+    flat: yes
+
+# init kubeadm
+
+- name: Reset Kubernetes component
+  shell: "kubeadm reset"
+  register: reset_cluster
+
+- name: Init Kubernetes cluster
+  when: reset_cluster|succeeded
+  shell: "kubeadm init --token {{ token }} --apiserver-advertise-address {{ ansible_host }}"
+  register: init_cluster
+
+- name: Enable and restart kubelet engine
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  register: started_kubelet
+
+- name: Create Kubernetes config directory
+  file: path=/root/.kube/ state=directory
+
+- name: Copy admin.conf to root
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/root/.kube/config"
+    owner: root
+    group: root
+    mode: 0755
+    remote_src: True
+
+- name: fetch config
+  fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: config/admin.conf
+    flat: yes
+
+- name: taint master-node
+  shell: "kubectl taint nodes --all node-role.kubernetes.io/master-"
+
+- name: pod-network is present (calico)
+  shell: "kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml"
+

@@ -1,0 +1,31 @@
+- hosts:
+    - jenkins
+
+  user: root
+
+  roles:
+    - jenkins
+
+  vars:
+    jenkins_backup_file: 'jenkins_data.tar.bz2'
+
+  tasks:
+    - name: Stop jenkins
+      command: 'docker stop jenkins'
+      ignore_errors: yes
+
+    - name: Remove old jenkins-volume
+      command: 'docker volume rm jenkins_data'
+
+    - name: copy the backup-file
+      copy:
+        src: 'backup/{{ jenkins_backup_file }}'
+        dest: '/tmp/{{ jenkins_backup_file }}'
+
+    - name: Restore jenkins docker-volume
+      command: |
+        docker run --rm -v jenkins_data:/volume -v /tmp:/backup alpine \
+          sh -c "rm -rf /volume/* /volume/..?* /volume/.[!.]* ; tar -C /volume/ -xjf /backup/'{{ jenkins_backup_file }}'"
+
+    - name: Start jenkins
+      command: '/etc/init.d/jenkins'

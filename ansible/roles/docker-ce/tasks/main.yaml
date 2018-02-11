@@ -1,0 +1,34 @@
+- include_role:
+    name: common
+
+- name: Remove old docker-versions
+  apt:
+    name: docker docker-engine docker.io
+    state: absent
+
+- shell: 'echo $(. /etc/os-release; echo "$ID")'
+  register: os_release_command
+
+- set_fact:
+    os_release: '{{ os_release_command.stdout }}'
+
+- shell: 'echo $(lsb_release -cs)'
+  register: os_release_codename_command
+
+- set_fact:
+    os_release_codename: '{{ os_release_codename_command.stdout }}'
+
+- name: Docker-CE apt-key is present
+  apt_key:
+    url: 'https://download.docker.com/linux/{{ os_release }}/gpg'
+    state: present
+
+- name: Docker-CE apt-repo is present
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/{{ os_release }} {{ os_release_codename }} stable'
+
+- name: Docker-CE is installed
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes

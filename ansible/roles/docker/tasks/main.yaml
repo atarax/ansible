@@ -1,0 +1,18 @@
+- include_role:
+    name: common
+
+- name: docker-apt-key is present
+  apt_key:
+    url: 'https://download.docker.com/linux/ubuntu/gpg'
+    state: present
+
+- name: docker-apt-repository is present
+  apt_repository:
+    repo: 'deb https://download.docker.com/linux/debian stretch stable'
+    update_cache: yes
+
+- name: docker is installed
+  apt:
+    name: docker-ce
+    state: present
+
