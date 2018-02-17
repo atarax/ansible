@@ -15,7 +15,7 @@ demand_infrastructure:
     paths:
       - inventory
   script:
-    - echo $SSH_PRIVATE_KEY
+    - echo $SSH_PRIVATE_KEY | base64 -d
     - exit 0
     - mkdir inventory
     - docker run 
