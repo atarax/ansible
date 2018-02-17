@@ -15,11 +15,11 @@ demand_infrastructure:
       - /tmp
   script:
     - echo 'foo'
-    # - docker run 
-    #     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-    #     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-    #     atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create
-    # - cat /tmp/inventory > /tmp/master.inv
+    - docker run 
+        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create > /tmp/inventory
+    - cat /tmp/inventory > /tmp/master.inv
     # - docker run 
     #     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
     #     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
