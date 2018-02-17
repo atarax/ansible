@@ -2,6 +2,7 @@ image: docker:latest
 
 stages:
   - demand_infrastructure
+  - provision_infrastructure
 
 # variables:
 #       DOCKER_INTERMEDIATE_IMAGE_LOGIN: '$CI_REGISTRY_IMAGE/intermediate:$CI_PIPELINE_ID'
@@ -9,8 +10,29 @@ stages:
 
 demand_infrastructure:
   stage: demand_infrastructure
+  artifacts: 
+    - /tmp
   script:
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
         atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create
+    - cat /tmp/inventory > /tmp/master.inv
+      # - docker run 
+      #     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      #     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      #     atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c create
+      # - cat /tmp/inventory > /tmp/node_1.inv
+      # - docker run 
+      #     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+      #     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+      #     atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create
+      # - cat /tmp/inventory > /tmp/node_2.inv
+
+provision_infrastructure:
+  image: atarax/ansible
+  stage: provision_infrastructure
+  dependencies: 
+    - demand_infrastructure
+  script:
+    - ls -la /tmp
