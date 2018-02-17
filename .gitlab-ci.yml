@@ -5,8 +5,8 @@ stages:
   - provision_infrastructure
   - decomission_infrastructure
 
-  variables:
-      RBL_CONTROL_IMAGE: 'atarax/rbl-control:stable'
+variables:
+  RBL_CONTROL_IMAGE: 'atarax/rbl-control:stable'
 
 
 demand_infrastructure:
