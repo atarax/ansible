@@ -6,7 +6,7 @@ stages:
   - decomission_infrastructure
 
 variables:
-  RBL_CONTROL_IMAGE: 'atarax/rbl-control:stable'
+  RBL_CONTROL_IMAGE: 'atarax/rbl-control:jenkins-rbl-control-master-26-stable'
 
 
 demand_infrastructure:
