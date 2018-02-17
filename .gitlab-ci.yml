@@ -27,6 +27,13 @@ demand_infrastructure:
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
         atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create inventory/node_2.inv
+    - echo "[k8l_master]" >> inventory/inventory
+    - cat inventory/master.inv >> inventory/inventory
+    - echo "" >> inventory/inventory
+    - echo "[k8l_node]" > inventory/inventory
+    - cat inventory/master.inv >> inventory/inventory
+    - echo "" >> inventory/inventory
+    - cat inventory/master.inv >> inventory/inventory
 
 provision_infrastructure:
   image: atarax/ansible
@@ -34,7 +41,12 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
-    - ls -la inventory
+    - cat inventory/inventory
+    - ansible-playbook 
+        -i inventory/inventory 
+        ansible/provision_aws.yaml 
+        ansible/k8l_setup.yaml
+        ansible/k8l_addons.yaml
 
 decomission_infrastructure:
   stage: decomission_infrastructure
