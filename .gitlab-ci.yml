@@ -3,7 +3,7 @@ image: docker:latest
 stages:
   - demand_infrastructure
   - provision_infrastructure
-
+  - decomission_infrastructure
 # variables:
 #       DOCKER_INTERMEDIATE_IMAGE_LOGIN: '$CI_REGISTRY_IMAGE/intermediate:$CI_PIPELINE_ID'
 
