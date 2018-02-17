@@ -1,0 +1,16 @@
+image: docker:latest
+
+stages:
+  - demand_infrastructure
+
+# variables:
+#       DOCKER_INTERMEDIATE_IMAGE_LOGIN: '$CI_REGISTRY_IMAGE/intermediate:$CI_PIPELINE_ID'
+
+
+demand_infrastructure:
+  stage: demand_infrastructure
+  script:
+    - docker run \
+      -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+      -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+      atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create
