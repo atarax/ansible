@@ -26,7 +26,7 @@ demand_infrastructure:
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create inventory/node_2.inv
+        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create inventory/node_2.inv &
     - wait
     - echo "[k8l_master]" >> inventory/inventory
     - cat inventory/master.inv >> inventory/inventory
