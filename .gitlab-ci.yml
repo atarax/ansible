@@ -12,21 +12,21 @@ demand_infrastructure:
   stage: demand_infrastructure
   artifacts: 
     paths:
-      - /tmp
+      - inventory
   script:
     - echo 'foo'
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create > /tmp/master.inv
+        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create > inventory/master.inv
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c create > /tmp/node_1.inv
+        atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c create > inventory/node_1.inv
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create /tmp/node_2.inv
+        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create inventory/node_2.inv
 
 provision_infrastructure:
   image: atarax/ansible
@@ -34,7 +34,7 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
-    - ls -la /tmp
+    - ls -la inventory
 
 decomission_infrastructure:
   stage: decomission_infrastructure
