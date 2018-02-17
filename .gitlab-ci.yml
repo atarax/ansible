@@ -32,7 +32,7 @@ demand_infrastructure:
     - echo "[k8l_master]" >> inventory/inventory
     - cat inventory/master.inv >> inventory/inventory
     - echo "" >> inventory/inventory
-    - echo "[k8l_node]" > inventory/inventory
+    - echo "[k8l_node]" >> inventory/inventory
     - cat inventory/node_1.inv >> inventory/inventory
     - cat inventory/node_2.inv >> inventory/inventory
     - cat inventory/inventory
@@ -44,6 +44,8 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
+    - cp ssh/id_rsa.pub /root/.ssh
+    - echo $SSH_PRIVATE_KEY | base64 -d > /root/.ssh/id_rsa
     - cat inventory/inventory
     - ansible-playbook 
         -i inventory/inventory 
