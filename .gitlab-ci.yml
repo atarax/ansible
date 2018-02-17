@@ -44,6 +44,7 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
+    - mkdir /root/.ssh
     - cp ssh/id_rsa.pub /root/.ssh
     - echo $SSH_PRIVATE_KEY | base64 -d > /root/.ssh/id_rsa
     - cat inventory/inventory
