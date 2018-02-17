@@ -18,18 +18,15 @@ demand_infrastructure:
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create > /tmp/inventory
-    - cat /tmp/inventory > /tmp/master.inv
-    # - docker run 
-    #     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-    #     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-    #     atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c create
-    # - cat /tmp/inventory > /tmp/node_1.inv
-    # - docker run 
-    #     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-    #     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-    #     atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create
-    # - cat /tmp/inventory > /tmp/node_2.inv
+        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create > /tmp/master.inv
+    - docker run 
+        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+        atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c create > /tmp/node_1.inv
+    - docker run 
+        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create /tmp/node_2.inv
 
 provision_infrastructure:
   image: atarax/ansible
