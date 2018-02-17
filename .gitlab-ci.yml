@@ -31,12 +31,10 @@ demand_infrastructure:
     - wait
     - echo "[k8l_master]" >> inventory/inventory
     - cat inventory/master.inv >> inventory/inventory
-    - cat inventory/inventory
-
     - echo "" >> inventory/inventory
     - echo "[k8l_node]" > inventory/inventory
-    - cat inventory/node1_1.inv >> inventory/inventory
-    - cat inventory/node1_2.inv >> inventory/inventory
+    - cat inventory/node_1.inv >> inventory/inventory
+    - cat inventory/node_2.inv >> inventory/inventory
     - cat inventory/inventory
 
 
