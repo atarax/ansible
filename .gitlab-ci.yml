@@ -4,8 +4,9 @@ stages:
   - demand_infrastructure
   - provision_infrastructure
   - decomission_infrastructure
-# variables:
-#       DOCKER_INTERMEDIATE_IMAGE_LOGIN: '$CI_REGISTRY_IMAGE/intermediate:$CI_PIPELINE_ID'
+
+  variables:
+      RBL_CONTROL_IMAGE: 'atarax/rbl-control:stable'
 
 
 demand_infrastructure:
@@ -18,23 +19,26 @@ demand_infrastructure:
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c create > inventory/master.inv &
+        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-1" -c create > inventory/master.inv &
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c create > inventory/node_1.inv &
+        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-3" -c create > inventory/node_1.inv &
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c create inventory/node_2.inv &
+        $RBL_CONTROL_IMAGE /rbl-control -r "eu-central-1" -c create inventory/node_2.inv & 
     - wait
     - echo "[k8l_master]" >> inventory/inventory
     - cat inventory/master.inv >> inventory/inventory
+    - cat inventory/inventory
+
     - echo "" >> inventory/inventory
     - echo "[k8l_node]" > inventory/inventory
-    - cat inventory/master.inv >> inventory/inventory
-    - echo "" >> inventory/inventory
-    - cat inventory/master.inv >> inventory/inventory
+    - cat inventory/node1_1.inv >> inventory/inventory
+    - cat inventory/node1_2.inv >> inventory/inventory
+    - cat inventory/inventory
+
 
 provision_infrastructure:
   image: atarax/ansible
@@ -56,12 +60,12 @@ decomission_infrastructure:
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-1" -c destroy
+        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-1" -c destroy
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-west-3" -c destroy
+        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-3" -c destroy
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
         -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        atarax/rbl-control:stable /rbl-control -r "eu-central-1" -c destroy
+        $RBL_CONTROL_IMAGE /rbl-control -r "eu-central-1" -c destroy
