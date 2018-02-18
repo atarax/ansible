@@ -49,9 +49,9 @@ provision_infrastructure:
     - echo $SSH_PRIVATE_KEY
     - mkdir /root/.ssh
     - cp ssh/id_rsa.pub /root/.ssh
-    - echo $SSH_PRIVATE_KEY  > /root/.ssh/id_rsa
+    - echo $SSH_PRIVATE_KEY  > /root/.ssh/id_rsa 
     - cat inventory/inventory
-    - ansible-playbook 
+    - ansible-playbook -e 'host_key_checking=False'
         -i inventory/inventory 
         ansible/provision_aws.yaml 
         ansible/k8l_setup.yaml
