@@ -44,13 +44,12 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
-    - ssh-agent bash
     - echo $SSH_PRIVATE_KEY
     - mkdir /root/.ssh
-    - cp ssh/id_rsa.pub /root/.ssh
+    # - cp ssh/id_rsa.pub /root/.ssh
     - echo $SSH_PRIVATE_KEY  > /root/.ssh/id_rsa 
-    - chown root:root /root/.ssh/*
-    - chmod 0500 /root/.ssh/*
+    # - chown root:root /root/.ssh/*
+    - chmod 0600 /root/.ssh/id_rsa
     - cat inventory/inventory
     - export ANSIBLE_HOST_KEY_CHECKING=False
     - ansible-playbook 
