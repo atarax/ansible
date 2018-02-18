@@ -45,11 +45,10 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
+    - ssh-agent bash
     - echo $SSH_PRIVATE_KEY
     - mkdir /root/.ssh
     - cp ssh/id_rsa.pub /root/.ssh
-    - ssh-agent bash
-    - ssh-add ~/.ssh/id_rsa
     - echo $SSH_PRIVATE_KEY  > /root/.ssh/id_rsa
     - cat inventory/inventory
     - ansible-playbook 
