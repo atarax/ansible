@@ -58,8 +58,9 @@
 
   manual_verification:
     stage: manual_verification
-    only: master
     when: manual
+    only: 
+      - master
     script: 
       - echo "Goodbye..."
 
