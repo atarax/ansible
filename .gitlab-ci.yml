@@ -15,7 +15,7 @@ demand_infrastructure:
     paths:
       - inventory
   script:
-    - echo $SSH_PRIVATE_KEY | base64 -d
+    - echo $SSH_PRIVATE_KEY
     - mkdir inventory
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
@@ -45,10 +45,10 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
-    - echo $SSH_PRIVATE_KEY | base64 -d
+    - echo $SSH_PRIVATE_KEY
     - mkdir /root/.ssh
     - cp ssh/id_rsa.pub /root/.ssh
-    - echo $SSH_PRIVATE_KEY | base64 -d > /root/.ssh/id_rsa
+    - echo $SSH_PRIVATE_KEY  > /root/.ssh/id_rsa
     - cat inventory/inventory
     - ansible-playbook 
         -i inventory/inventory 
