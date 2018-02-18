@@ -1,81 +1,81 @@
-image: docker:latest
+  image: docker:latest
 
-stages:
-  - demand_infrastructure
-  - provision_infrastructure
-  - manual verification
-  - decomission_infrastructure
-
-variables:
-  RBL_CONTROL_IMAGE: 'atarax/rbl-control:jenkins-rbl-control-master-26-stable'
-
-
-demand_infrastructure:
-  stage: demand_infrastructure
-  artifacts: 
-    paths:
-      - inventory
-  script:
-    - mkdir inventory
-    - docker run 
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-1" -c create | tee inventory/master.inv &
-    - docker run 
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-3" -c create | tee inventory/node_1.inv &
-    - docker run 
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        $RBL_CONTROL_IMAGE /rbl-control -r "eu-central-1" -c create | tee inventory/node_2.inv & 
-    - wait
-    - echo "[k8l_master]" >> inventory/inventory
-    - cat inventory/master.inv >> inventory/inventory
-    - echo "" >> inventory/inventory
-    - echo "[k8l_node]" >> inventory/inventory
-    - cat inventory/node_1.inv >> inventory/inventory
-    - cat inventory/node_2.inv >> inventory/inventory
-    - cat inventory/inventory
-
-
-provision_infrastructure:
-  image: atarax/ansible
-  stage: provision_infrastructure
-  dependencies: 
+  stages:
     - demand_infrastructure
-  script:
-    - mkdir /root/.ssh
-    - printf "%s" "$SSH_PRIVATE_KEY"  > /root/.ssh/id_rsa 
-    - chmod 0600 /root/.ssh/id_rsa
-    - cat inventory/inventory
-    - export ANSIBLE_HOST_KEY_CHECKING=False
-    - ansible-playbook 
-        -i inventory/inventory 
-        ansible/provision_aws.yaml 
-        ansible/k8l_setup.yaml
-        ansible/k8l_addons.yaml
+    - provision_infrastructure
+    - manual_verification
+    - decomission_infrastructure
 
-manual_verification:
-  stage: manual_verification
-  only: master
-  when: manual
-  script: 
-    - echo "Goodbye..."
+  variables:
+    RBL_CONTROL_IMAGE: 'atarax/rbl-control:jenkins-rbl-control-master-26-stable'
 
-decomission_infrastructure:
-  stage: decomission_infrastructure
-  when: always
-  script:
-    - docker run 
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-1" -c destroy
-    - docker run 
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-3" -c destroy
-    - docker run 
-        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-        $RBL_CONTROL_IMAGE /rbl-control -r "eu-central-1" -c destroy
+
+  demand_infrastructure:
+    stage: demand_infrastructure
+    artifacts: 
+      paths:
+        - inventory
+    script:
+      - mkdir inventory
+      - docker run 
+          -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-1" -c create | tee inventory/master.inv &
+      - docker run 
+          -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-3" -c create | tee inventory/node_1.inv &
+      - docker run 
+          -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          $RBL_CONTROL_IMAGE /rbl-control -r "eu-central-1" -c create | tee inventory/node_2.inv & 
+      - wait
+      - echo "[k8l_master]" >> inventory/inventory
+      - cat inventory/master.inv >> inventory/inventory
+      - echo "" >> inventory/inventory
+      - echo "[k8l_node]" >> inventory/inventory
+      - cat inventory/node_1.inv >> inventory/inventory
+      - cat inventory/node_2.inv >> inventory/inventory
+      - cat inventory/inventory
+
+
+  provision_infrastructure:
+    image: atarax/ansible
+    stage: provision_infrastructure
+    dependencies: 
+      - demand_infrastructure
+    script:
+      - mkdir /root/.ssh
+      - printf "%s" "$SSH_PRIVATE_KEY"  > /root/.ssh/id_rsa 
+      - chmod 0600 /root/.ssh/id_rsa
+      - cat inventory/inventory
+      - export ANSIBLE_HOST_KEY_CHECKING=False
+      - ansible-playbook 
+          -i inventory/inventory 
+          ansible/provision_aws.yaml 
+          ansible/k8l_setup.yaml
+          ansible/k8l_addons.yaml
+
+  manual_verification:
+    stage: manual_verification
+    only: master
+    when: manual
+    script: 
+      - echo "Goodbye..."
+
+  decomission_infrastructure:
+    stage: decomission_infrastructure
+    when: always
+    script:
+      - docker run 
+          -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-1" -c destroy
+      - docker run 
+          -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          $RBL_CONTROL_IMAGE /rbl-control -r "eu-west-3" -c destroy
+      - docker run 
+          -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+          -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+          $RBL_CONTROL_IMAGE /rbl-control -r "eu-central-1" -c destroy
