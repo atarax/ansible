@@ -14,7 +14,7 @@
 - name: Copy helm binary
   copy:
     src: /tmp/helm/linux-amd64/helm
-    dest: /usr/local/bin"
+    dest: "/usr/local/bin"
     owner: root
     group: root
     mode: 0755
@@ -27,7 +27,7 @@
   shell: "kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller"
 
 - name: Init helm
-  shell: "helm init --service-account tiller --force-upgrade"
+  shell: "/usr/local/bin/helm init --service-account tiller --force-upgrade"
 
 - name: Copy istio.yaml
   copy:
