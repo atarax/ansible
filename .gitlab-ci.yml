@@ -3,6 +3,7 @@ image: docker:latest
 stages:
   - demand_infrastructure
   - provision_infrastructure
+  - manual verification
   - decomission_infrastructure
 
 variables:
@@ -44,11 +45,8 @@ provision_infrastructure:
   dependencies: 
     - demand_infrastructure
   script:
-    - echo $SSH_PRIVATE_KEY
     - mkdir /root/.ssh
-    # - cp ssh/id_rsa.pub /root/.ssh
     - printf "%s" "$SSH_PRIVATE_KEY"  > /root/.ssh/id_rsa 
-    # - chown root:root /root/.ssh/*
     - chmod 0600 /root/.ssh/id_rsa
     - cat inventory/inventory
     - export ANSIBLE_HOST_KEY_CHECKING=False
@@ -57,6 +55,13 @@ provision_infrastructure:
         ansible/provision_aws.yaml 
         ansible/k8l_setup.yaml
         ansible/k8l_addons.yaml
+
+manual_verification:
+  stage: manual_verification
+  only: master
+  when: manual
+  script: 
+    - echo "Goodbye..."
 
 decomission_infrastructure:
   stage: decomission_infrastructure
