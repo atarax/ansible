@@ -15,7 +15,6 @@ demand_infrastructure:
     paths:
       - inventory
   script:
-    - echo $SSH_PRIVATE_KEY
     - mkdir inventory
     - docker run 
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
