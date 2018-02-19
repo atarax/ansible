@@ -1,0 +1,4 @@
+- hosts: all
+  user: root
+  tasks:
+  - shell: "docker system prune -af"

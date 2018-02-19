@@ -1,0 +1,12 @@
+# warning, requires docker, 
+# dunno how to solve this
+# do not wanna include both
+# docker and docker-ce :(
+- name: Copy prometheus startup-script
+  copy:
+    src: 'prometheus_startup'
+    dest: '/etc/init.d/prometheus'
+    mode: 0755
+
+- name: Run prometeus
+  command: '/etc/init.d/prometheus'
