@@ -3,7 +3,6 @@
   stages:
     - demand_infrastructure
     - provision_infrastructure
-    - manual_verification
     - decomission_infrastructure
 
   variables:
@@ -55,14 +54,6 @@
           ansible/provision_aws.yaml 
           ansible/k8l_setup.yaml
           ansible/k8l_addons.yaml
-
-  manual_verification:
-    stage: manual_verification
-    when: manual
-    only: 
-      - master
-    script: 
-      - echo "Goodbye..."
 
   decomission_infrastructure:
     stage: decomission_infrastructure
