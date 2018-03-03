@@ -15,4 +15,3 @@
   apt:
     name: docker-ce
     state: present
-

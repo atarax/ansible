@@ -1,0 +1,63 @@
+- include_vars:
+    dir: 'vars'
+
+# free port 80 for letsencrypt
+- name: stop haproxy
+  service:
+    name: haproxy
+    state: stopped
+    
+- name: backports-repo is present
+  apt_repository:
+    repo: deb http://ftp.debian.org/debian stretch-backports main
+    state: present
+
+- name: certbot is installed
+  apt:
+    name: certbot
+    default_release: stretch-backports
+    state: present
+
+- name: generate certificate
+  shell: certbot 
+            certonly 
+            --standalone
+            -d {{ item }} 
+            --email "{{letsencrypt_email}}" 
+            --agree-tos
+            --non-interactive
+  with_items: "{{ domains }}"
+
+- name: haproxy is present
+  apt:
+    name: haproxy
+    state: present
+    update_cache: yes
+
+- name: haproxy certificate-folder present
+  file:
+    path: /etc/haproxy/certs
+    state: directory
+    mode: 0770
+
+- name: combine certificate-files
+  shell: DOMAIN="{{ item }}" &&
+          sudo -E bash -c 
+          "cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/letsencrypt/live/$DOMAIN/privkey.pem > /etc/haproxy/certs/$DOMAIN.pem"
+  with_items: "{{ domains }}"
+
+- name: right permissions for certificates
+  file:
+    path: /etc/haproxy/certs
+    recurse: yes
+    mode: 0770
+
+- name: update haproxy-config
+  copy:
+    src: haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: reload haproxy
+  service:
+    name: haproxy
+    state: started

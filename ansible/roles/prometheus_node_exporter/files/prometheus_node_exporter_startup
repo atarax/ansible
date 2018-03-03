@@ -1,0 +1,8 @@
+#!/bin/bash
+
+docker run -d \
+  --name="prometheus_node_exporter"
+  --rm
+  --net="host" \
+  --pid="host" \
+  quay.io/prometheus/node-exporter

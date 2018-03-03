@@ -1,0 +1,5 @@
+- hosts: cert_proxy
+  user: root
+  
+  roles:
+  - cert_proxy

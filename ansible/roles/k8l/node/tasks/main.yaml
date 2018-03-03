@@ -13,12 +13,6 @@
     file: 'config/token.yaml'
     name: token
 
-- debug:
-    msg: '{{ token.value }}'
-
-- debug:
-    msg: '{{ groups["k8l_master"][0] }}'
-
 - name: Reset Kubernetes component
   shell: "kubeadm reset"
   register: reset_cluster

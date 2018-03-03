@@ -2,11 +2,14 @@
 # dunno how to solve this
 # do not wanna include both
 # docker and docker-ce :(
-- name: Copy prometheus startup-script
+- name: Copy prometheus-node-exporter startup-script
   copy:
-    src: 'prometheus_startup'
+    src: 'prometheus_node_exporter_startup'
     dest: '/etc/init.d/prometheus'
     mode: 0755
+
+- name: stop prometheus if it is running
+  command: docker stop prometheus_node_exporter
 
 - name: Run prometeus
   command: '/etc/init.d/prometheus'
